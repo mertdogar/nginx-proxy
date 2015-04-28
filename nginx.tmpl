@@ -42,6 +42,7 @@ upstream {{ $host }} {
 
 {{ $crt := groupBy $containers "Env.SSL_CRT" }}
 {{ $key := groupBy $containers "Env.SSL_KEY" }}
+{{ $maxBodySize := groupBy $containers "Env.MAX_BODY_SIZE" }}
 
 {{ if and (eq (len $crt) 1) (eq (len $key) 1) }}
 
@@ -76,6 +77,10 @@ server {
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "upgrade";
+
+		{{ if $maxBodySize }}
+		client_max_body_size {{ $maxBodySize }};
+		{{ end }}
 	}
 
 }
@@ -99,6 +104,10 @@ server {
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "upgrade";
+
+		{{ if $maxBodySize }}
+		client_max_body_size {{ $maxBodySize }};
+		{{ end }}
 	}
 }
 {{ end }}
